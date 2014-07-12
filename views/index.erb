@@ -2,7 +2,7 @@
   <!-- main area -->
   <div class="col-sm-10 col-xs-12" id="main">
     <div class="row">
-      <div class="col-sm-12 col-xs-12 codecol">
+      <div class="col-sm-12 col-xs-12">
         <div class='form-group'>
           <form action="/" method="get" accept-charset="utf-8">
             <label for="agent">Agent</label>
@@ -45,9 +45,9 @@
           <p>
             <ul>
               <% names = [] %>
-              <% @output.each_with_index{|o, index| names << o["id"] if index %  3 == 0 } %>
-              <% names = names.uniq %>
-              <% skip_index = 0 %>
+              <% @output.each_with_index{|o, index| names << o["id"] if (index %  3) == 0 } %>
+              <% names.uniq! %>
+              <% skip_index = -1 %>
               <% @output.each_with_index do |o, index| %>
                 <% if index % 3 == 0 %>
                   <% if names.include? o["id"] %>
@@ -77,5 +77,26 @@
         <% end %>
       </div>
     </div>
+    <div class="row">
+      <div class="col-sm-12 col-xs-12">
+        <button name="run" id="run_button" value="graph" class='btn btn-primary'/>Plot</button>
+        <div id='viz'></div>
+      </div>
+    </div>
   </div> <!--/#main-->
 </div> <!--/.row-->
+
+<script type="text/javascript" charset="utf-8">
+  $(function() {
+    $("#run_button").click(function() {
+      $.get("/.json" + window.location.search)
+        .done(function(return_data) {
+          $("#viz").empty()
+          if (return_data.hasOwnProperty("nodes")) {
+            var net = Network()
+            net("#viz", return_data)
+          }
+        });
+    });
+  })
+</script>
