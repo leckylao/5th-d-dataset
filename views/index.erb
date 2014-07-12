@@ -1,0 +1,81 @@
+<div class="row row-offcanvas row-offcanvas-left">
+  <!-- main area -->
+  <div class="col-sm-10 col-xs-12" id="main">
+    <div class="row">
+      <div class="col-sm-12 col-xs-12 codecol">
+        <div class='form-group'>
+          <form action="/" method="get" accept-charset="utf-8">
+            <label for="agent">Agent</label>
+            <select name="agent" id="agent" class='form-control' required='required'>
+              <% @agencies.each do |agent| %>
+                <% id = agent["id"].gsub(/\s/, '_') %>
+                <option value='<%=h id %>' <%= 'selected' if id == params[:agent] %> ><%= agent["id"] %></option>
+              <% end %>
+            </select>
+            <label for="relationship1">1st Relationship</label>
+            <select name="relationship1" id="relationship1" class='form-control' required='required'>
+              <% @relationships.each do |relationship| %>
+                <option value=<%= relationship %> <%= 'selected' if relationship == params[:relationship1] %> ><%= relationship %></option>
+              <% end %>
+            </select>
+            <label for="relationship2">2nd Relationship</label>
+            <select name="relationship2" id="relationship2" class='form-control'>
+              <option value=''>Please select...</option>
+              <% @relationships.each do |relationship| %>
+                <option value=<%= relationship %> <%= 'selected' if relationship == params[:relationship2] %> ><%= relationship %></option>
+              <% end %>
+            </select>
+            <label for="relationship3">3rd Relationship</label>
+            <select name="relationship3" id="relationship3" class='form-control'>
+              <option value=''>Please select...</option>
+              <% @relationships.each do |relationship| %>
+                <option value=<%= relationship %> <%= 'selected' if relationship == params[:relationship3] %> ><%= relationship %></option>
+              <% end %>
+            </select>
+            <br/>
+            <input type="submit" name="submit" id="submit" value="submit" class='btn btn-primary pull-right' />
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-xs-12">
+        <% if @output %>
+          <h2 for="output">Result</h2>
+          <p>
+            <ul>
+              <% names = [] %>
+              <% @output.each_with_index{|o, index| names << o["id"] if index %  3 == 0 } %>
+              <% names = names.uniq %>
+              <% skip_index = 0 %>
+              <% @output.each_with_index do |o, index| %>
+                <% if index % 3 == 0 %>
+                  <% if names.include? o["id"] %>
+                    <li>Name: <%= o["id"] %></li>
+                    <% names.shift %>
+                  <% else %>
+                    <% skip_index = index %>
+                    <% next %>
+                  <% end %>
+                <% elsif index % 3 == 1 %>
+                  <% next if (skip_index + 1) == index %>
+                  <li>Start date: <%= o["id"] %></li>
+                <% else index % 3 == 2 %>
+                  <% if ( skip_index + 2 ) == index %>
+                    <% skip_index = 0 %>
+                    <% next %>
+                  <% else %>
+                    <li>End date: <%= o["id"] %></li>
+                    <hr/>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </ul>
+          </p>
+        <% else %>
+          No result
+        <% end %>
+      </div>
+    </div>
+  </div> <!--/#main-->
+</div> <!--/.row-->
