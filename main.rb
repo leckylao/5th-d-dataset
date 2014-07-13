@@ -33,17 +33,16 @@ get '/.json' do
   @graph = "http://agile-plains-1962.herokuapp.com/api/v1/shape/gremlin"
   if params[:agent] && params[:relationship1]
     query = "g.V().Has('name', '#{params[:agent].gsub(/_/, ' ')}').Out('#{params[:relationship1]}')"
-    if params[:relationship2] && !params[:relationship2].empty?
-      query += ".Out('#{params[:relationship2]}')"
-      target_node = 6
-    end
+    query += ".Out('#{params[:relationship2]}')" if params[:relationship2] && !params[:relationship2].empty?
+    query += ".Out('#{params[:relationship3]}')" if params[:relationship3] && !params[:relationship3].empty?
     if params[:relationship3] && !params[:relationship3].empty?
-      query += ".Out('#{params[:relationship3]}')" 
       target_node = 8
+    elsif params[:relationship2] && !params[:relationship2].empty?
+      target_node = 6
     else
       target_node = 4
     end
-    query = query + ".Out('name').All()"
+    query = query + ".Out('name').GetLimit(5)"
     logger.info query
     @output = HTTParty.post(@action, {body: query})
     @output = JSON.parse(@output.body)["result"]

@@ -47,12 +47,26 @@
               <% names = [] %>
               <% @output.each_with_index{|o, index| names << o["id"] if (index %  3) == 0 } %>
               <% names.uniq! %>
+              <% name_size = names.size %>
               <% skip_index = -1 %>
               <% @output.each_with_index do |o, index| %>
                 <% if index % 3 == 0 %>
                   <% if names.include? o["id"] %>
-                    <li>Name: <%= o["id"] %></li>
-                    <% names.shift %>
+                    <li>Name: <strong><%= o["id"] %></strong></li>
+                    <% name = names.shift %>
+                    <% if name_size < 11 %>
+                      <% action = "http://api.trove.nla.gov.au/result?key=mqhgg10dcrjr7jif&zone=picture&q=#{name}&encoding=json" %>
+                      <% picture = JSON.parse(HTTParty.get(URI.escape(action)).body) %>
+                      <% works = picture["response"]["zone"].first["records"]["work"] %>
+                      <% next unless works %>
+                      <% works.each do |work| %>
+                        <% identifiers = work["identifier"] %>
+                        <% next unless identifiers %>
+                        <% identifiers.each do |identifier| %>
+                          <img src='<%= identifier["value"] %>' />
+                        <% end %>
+                      <% end %>
+                    <% end %>
                   <% else %>
                     <% skip_index = index %>
                     <% next %>
@@ -79,7 +93,7 @@
     </div>
     <div class="row">
       <div class="col-sm-12 col-xs-12">
-        <button name="run" id="run_button" value="graph" class='btn btn-primary'/>Plot</button>
+        <button name="run" id="run_button" value="graph" class='btn btn-primary'/>Plot Relationship Graph</button>
         <div id='viz'></div>
       </div>
     </div>
