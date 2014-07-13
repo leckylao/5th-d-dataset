@@ -8,8 +8,7 @@
             <label for="agent">Agent</label>
             <select name="agent" id="agent" class='form-control' required='required'>
               <% @agencies.each do |agent| %>
-                <% id = agent["id"].gsub(/\s/, '_') %>
-                <option value='<%=h id %>' <%= 'selected' if id == params[:agent] %> ><%= agent["id"] %></option>
+                <option value='<%=h agent %>' <%= 'selected' if agent == params[:agent] %> ><%= agent.gsub(/_/, ' ') %></option>
               <% end %>
             </select>
             <label for="relationship1">1st Relationship</label>

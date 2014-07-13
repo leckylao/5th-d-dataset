@@ -10,9 +10,9 @@ get '/' do
     @agencies = AGENCIES
   else
     @agencies = HTTParty.post(@action, {body: "g.V().Out('name').All()" })
-    AGENCIES = @agencies
+    @agencies = JSON.parse(@agencies.body)["result"]
+    AGENCIES = @agencies = @agencies.map{|agent| agent["id"].gsub(/\s/, '_')}.sort
   end
-  @agencies = JSON.parse(@agencies.body)["result"]
   if params[:agent] && params[:relationship1]
     query = "g.V().Has('name', '#{params[:agent].gsub(/_/, ' ')}').Out('#{params[:relationship1]}')"
     query += ".Out('#{params[:relationship2]}')" if params[:relationship2] && !params[:relationship2].empty?
