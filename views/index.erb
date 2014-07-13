@@ -52,20 +52,34 @@
               <% @output.each_with_index do |o, index| %>
                 <% if index % 3 == 0 %>
                   <% if names.include? o["id"] %>
-                    <li>Name: <strong><%= o["id"] %></strong></li>
+                    <li><h3><%= o["id"] %></h3></li>
                     <% name = names.shift %>
                     <% if name_size < 11 %>
-                      <% action = "http://api.trove.nla.gov.au/result?key=mqhgg10dcrjr7jif&zone=picture&q=#{name}&encoding=json" %>
+                      <% action = "http://api.trove.nla.gov.au/result?key=mqhgg10dcrjr7jif&zone=picture,newspaper&q=#{name}&encoding=json" %>
                       <% picture = JSON.parse(HTTParty.get(URI.escape(action)).body) %>
                       <% works = picture["response"]["zone"].first["records"]["work"] %>
                       <% next unless works %>
-                      <% works.each do |work| %>
-                        <% identifiers = work["identifier"] %>
-                        <% next unless identifiers %>
-                        <% identifiers.each do |identifier| %>
-                          <img src='<%= identifier["value"] %>' />
+                      <strong>Pictures: </strong>
+                      <div>
+                        <% works.each do |work| %>
+                          <% identifiers = work["identifier"] %>
+                          <% next unless identifiers %>
+                          <% identifiers.each do |identifier| %>
+                            <img src='<%= identifier["value"] %>' />
+                          <% end %>
                         <% end %>
-                      <% end %>
+                      </div>
+                      <% articles = picture["response"]["zone"].last["records"]["article"] %>
+                      <% next unless articles %>
+                      <strong>Articles: </strong>
+                      <ul>
+                        <% articles.each_with_index do |article,index| %>
+                          <% next if index > 5 %>
+                          <li>
+                            <p><%= article["snippet"] %><a href='<%= article["troveUrl"] %>' title='<%= name %>' target="_blank">View</a></p>
+                          </li>
+                        <% end %>
+                      </ul>
                     <% end %>
                   <% else %>
                     <% skip_index = index %>
@@ -73,13 +87,13 @@
                   <% end %>
                 <% elsif index % 3 == 1 %>
                   <% next if (skip_index + 1) == index %>
-                  <li>Start date: <%= o["id"] %></li>
+                  <li>Start date: <strong><%= o["id"] %></strong></li>
                 <% else index % 3 == 2 %>
                   <% if ( skip_index + 2 ) == index %>
                     <% skip_index = 0 %>
                     <% next %>
                   <% else %>
-                    <li>End date: <%= o["id"] %></li>
+                    <li>End date: <strong><%= o["id"] %></strong></li>
                     <hr/>
                   <% end %>
                 <% end %>
