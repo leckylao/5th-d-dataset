@@ -53,7 +53,7 @@
                   <% if names.include? o["id"] %>
                     <li><h3><%= o["id"] %></h3></li>
                     <% name = names.shift %>
-                    <% if name_size < 11 %>
+                    <% if name_size < 6 %>
                       <% action = "http://api.trove.nla.gov.au/result?key=mqhgg10dcrjr7jif&zone=picture,newspaper&q=#{name}&encoding=json" %>
                       <% picture = JSON.parse(HTTParty.get(URI.escape(action)).body) %>
                       <% works = picture["response"]["zone"].first["records"]["work"] %>
